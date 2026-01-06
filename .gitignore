@@ -33,6 +33,8 @@ env/
 ENV/
 .env
 .venv/
+**/venv/
+**/.venv/
 
 # Streamlit
 .streamlit/secrets.toml
@@ -48,3 +50,8 @@ health_records.db
 
 # Vercel
 .vercel/
+
+# Node
+node_modules/
+**/node_modules/
+frontend/dist/

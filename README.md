@@ -29,7 +29,33 @@
 
 详细部署指南请参考 [DEPLOYMENT.md](DEPLOYMENT.md)。
 
-### 后端 (Backend)
+### 一键启动（推荐开发方式）
+
+在项目根目录执行：
+
+```bash
+chmod +x dev.sh         # 仅首次需要
+./dev.sh
+```
+
+脚本会自动：
+- 为后端创建/使用虚拟环境并安装依赖
+- 为前端安装依赖（如未安装）
+- 启动 FastAPI 后端（默认端口 `8000`）
+- 启动 React 前端开发服务器（默认端口 `3000`）
+
+环境变量：
+- `BACKEND_PORT`：自定义后端端口（默认 `8000`）
+- `FRONTEND_PORT`：自定义前端端口（默认 `3000`）
+
+启动后可以访问：
+- 前端页面：http://localhost:3000
+- 后端 API：http://localhost:8000
+- API 文档：http://localhost:8000/docs
+
+### 手动启动（可选）
+
+#### 后端 (Backend)
 
 ```bash
 cd backend
@@ -39,7 +65,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-### 前端 (Frontend)
+#### 前端 (Frontend)
 
 ```bash
 cd frontend
