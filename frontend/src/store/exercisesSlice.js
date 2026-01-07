@@ -21,6 +21,14 @@ export const saveExerciseLog = createAsyncThunk('exercises/saveLog', async ({ da
   return response.data;
 });
 
+export const exportExerciseLogs = createAsyncThunk('exercises/export', async ({ startDate, endDate }) => {
+    const response = await api.get('/exercises/export', {
+        params: { start_date: startDate, end_date: endDate },
+        responseType: 'blob' // Important for file download
+    });
+    return response.data;
+});
+
 const exercisesSlice = createSlice({
   name: 'exercises',
   initialState: {

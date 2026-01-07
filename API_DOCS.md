@@ -23,6 +23,7 @@ Once the backend is running (default port 8000):
 - `GET /api/exercises/config`: Get exercise list configuration.
 - `POST /api/exercises/config`: Update exercise list configuration.
 - `GET /api/exercises/logs`: Get all exercise logs.
+- `GET /api/exercises/export`: Export exercise logs to Markdown (Query params: `start_date`, `end_date`).
 - `GET /api/exercises/logs/{date}`: Get exercise log for a specific date.
 - `POST /api/exercises/logs/{date}`: Save exercise log for a specific date.
 

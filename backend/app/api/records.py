@@ -17,8 +17,7 @@ def get_all_records(service: RecordService = Depends(get_record_service)):
 @router.get("/{date}/{time_of_day}", response_model=Optional[DailyRecord])
 def get_record(date: str, time_of_day: str, service: RecordService = Depends(get_record_service)):
     record = service.get_record(date, time_of_day)
-    if not record:
-        raise HTTPException(status_code=404, detail="Record not found")
+    # Return None (null) instead of 404 if not found, to avoid errors in logs for routine checks
     return record
 
 @router.post("/", response_model=DailyRecord)

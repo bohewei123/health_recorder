@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import PlainTextResponse
 from typing import List, Dict, Any, Optional
 from ..schemas.schemas import ExerciseConfigItem, ExerciseLog, ExerciseLogCreate
 from ..services.exercise_service import ExerciseService
@@ -22,15 +23,19 @@ def update_config(config: List[Dict[str, Any]], service: ExerciseService = Depen
 def get_all_logs(service: ExerciseService = Depends(get_exercise_service)):
     return service.get_all_logs()
 
+@router.get("/export", response_class=PlainTextResponse)
+def export_logs(start_date: str, end_date: str, service: ExerciseService = Depends(get_exercise_service)):
+    content = service.export_logs(start_date, end_date)
+    if not content:
+        raise HTTPException(status_code=404, detail="No logs found in range")
+    return content
+
 @router.get("/logs/{date}", response_model=Optional[ExerciseLog])
 def get_log(date: str, service: ExerciseService = Depends(get_exercise_service)):
     log = service.get_log(date)
     if not log:
-        # Return empty log structure instead of 404 to be friendly to frontend?
-        # Or let frontend handle 404. Let's return null/None which creates 200 with null body or 404.
-        # Returning None usually makes Pydantic unhappy if response_model expects data.
-        # Let's return 404.
-        raise HTTPException(status_code=404, detail="Log not found")
+        # Return None (null) instead of 404 to avoid errors in logs
+        return None
     return {"date": date, "data": log}
 
 @router.post("/logs/{date}", response_model=ExerciseLog)

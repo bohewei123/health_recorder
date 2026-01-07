@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Form, DatePicker, Select, Slider, Input, Button, Card, Row, Col, Typography, message, Collapse } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
-import { addRecord, fetchRecords } from '../store/recordsSlice';
+import { addRecord } from '../store/recordsSlice';
 import api from '../api';
 
 import { SYMPTOMS_CONFIG, ENCOURAGEMENT_MESSAGES } from '../constants';
@@ -37,12 +37,14 @@ const DailyRecord = () => {
                     general_note: data.notes?.General
                 });
                 message.info(`Found existing record for ${dateStr} ${timeOfDay}`);
+            } else {
+                // No record found (200 OK with null), reset form
+                form.resetFields();
             }
         } catch (error) {
-            // Not found is fine, reset form except date/time
+            console.error("Error fetching record:", error);
+            // On real error, also reset or handle gracefully
             form.resetFields();
-            // Need to set date/time back
-            // Actually resetFields resets everything to initialValues.
         } finally {
             setLoading(false);
         }

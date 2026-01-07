@@ -2,17 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Tabs, Table, Button, Form, Input, Select, DatePicker, message, Card, InputNumber, Switch } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import dayjs from 'dayjs';
-import { fetchExerciseConfig, updateExerciseConfig, saveExerciseLog } from '../store/exercisesSlice';
+import { fetchExerciseConfig, updateExerciseConfig, saveExerciseLog, exportExerciseLogs } from '../store/exercisesSlice';
 import api from '../api';
 
-const { TabPane } = Tabs;
 const { TextArea } = Input;
 
 const Exercises = () => {
     const dispatch = useDispatch();
     const config = useSelector(state => state.exercises.config);
     const [date, setDate] = useState(dayjs());
-    const [logData, setLogData] = useState({});
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -25,7 +23,6 @@ const Exercises = () => {
                 const res = await api.get(`/exercises/logs/${date.format('YYYY-MM-DD')}`);
                 if (res.data && res.data.data) {
                     const data = res.data.data;
-                    setLogData(data);
                     // Set form values
                     const formValues = {};
                     Object.keys(data).forEach(k => {
@@ -34,11 +31,9 @@ const Exercises = () => {
                     });
                     form.setFieldsValue(formValues);
                 } else {
-                    setLogData({});
                     form.resetFields();
                 }
-            } catch (e) {
-                setLogData({});
+            } catch {
                 form.resetFields();
             }
         };
@@ -60,41 +55,11 @@ const Exercises = () => {
         try {
             await dispatch(saveExerciseLog({ date: date.format('YYYY-MM-DD'), data })).unwrap();
             message.success('训练记录已保存！');
-        } catch (e) {
+        } catch {
             message.error('保存失败');
         }
     };
 
-    // Management Table
-    const columns = [
-        { title: '项目名称', dataIndex: 'name', key: 'name', render: (text, record, index) => (
-            <Input value={text} onChange={e => handleConfigChange(index, 'name', e.target.value)} />
-        )},
-        { title: '启用', dataIndex: 'enabled', key: 'enabled', render: (val, record, index) => (
-            <Switch checked={val} onChange={checked => handleConfigChange(index, 'enabled', checked)} />
-        )},
-        { title: '排序', dataIndex: 'order', key: 'order', render: (val, record, index) => (
-            <InputNumber value={val} onChange={v => handleConfigChange(index, 'order', v)} />
-        )},
-        { title: '操作', key: 'action', render: (_, record, index) => (
-            <Button danger onClick={() => {
-                const newConfig = [...config];
-                newConfig.splice(index, 1);
-                handleSaveConfig(newConfig);
-            }}>删除</Button>
-        )}
-    ];
-
-    const handleConfigChange = (index, key, value) => {
-        const newConfig = [...config];
-        newConfig[index] = { ...newConfig[index], [key]: value };
-        // We don't save immediately to server to avoid too many requests, or we can.
-        // Let's just update local state conceptually but here we need to dispatch to store or just local state.
-        // Since config is from store, let's create a local copy for editing or just dispatch update immediately.
-        // Dispatching update immediately might be slow. Better to have a "Save" button.
-        // For simplicity, let's assume we edit a local state copy.
-    };
-    
     // Actually, handling editable table with Redux properly requires local state.
     const [editableConfig, setEditableConfig] = useState([]);
     useEffect(() => {
@@ -111,7 +76,7 @@ const Exercises = () => {
         try {
             await dispatch(updateExerciseConfig(newConfig)).unwrap();
             message.success('配置已更新');
-        } catch (e) {
+        } catch {
             message.error('更新失败');
         }
     };
@@ -121,14 +86,37 @@ const Exercises = () => {
         setEditableConfig(newConfig);
     };
 
+    const handleExport = async () => {
+        try {
+            const dateStr = date.format('YYYY-MM-DD');
+            const blob = await dispatch(exportExerciseLogs({ startDate: dateStr, endDate: dateStr })).unwrap();
+            
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `training_feedback_${dateStr}.md`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            
+            message.success('导出成功');
+        } catch {
+            message.error('导出失败或无数据');
+        }
+    };
+
     const activeExercises = config.filter(e => e.enabled).sort((a, b) => a.order - b.order);
 
-    return (
-        <div>
-            <Tabs defaultActiveKey="1">
-                <TabPane tab="📝 训练反馈" key="1">
-                    <div style={{ marginBottom: 20 }}>
-                        <DatePicker value={date} onChange={setDate} />
+    const items = [
+        {
+            key: '1',
+            label: '📝 训练反馈',
+            children: (
+                <>
+                    <div style={{ marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <DatePicker value={date} onChange={setDate} allowClear={false} />
+                        <Button onClick={handleExport}>📥 导出当前日期数据</Button>
                     </div>
                     <Form form={form} onFinish={handleFeedbackSubmit} layout="vertical">
                         {activeExercises.map(ex => (
@@ -149,8 +137,14 @@ const Exercises = () => {
                         ))}
                         <Button type="primary" htmlType="submit" style={{ marginTop: 20 }}>💾 保存训练记录</Button>
                     </Form>
-                </TabPane>
-                <TabPane tab="⚙️ 项目管理" key="2">
+                </>
+            ),
+        },
+        {
+            key: '2',
+            label: '⚙️ 项目管理',
+            children: (
+                <>
                     <Button onClick={addExercise} type="dashed" style={{ marginBottom: 16 }}>+ 添加项目</Button>
                     <Table 
                         dataSource={editableConfig} 
@@ -176,8 +170,14 @@ const Exercises = () => {
                         pagination={false}
                     />
                     <Button type="primary" onClick={() => handleSaveConfig(editableConfig)} style={{ marginTop: 16 }}>💾 保存配置</Button>
-                </TabPane>
-            </Tabs>
+                </>
+            ),
+        },
+    ];
+
+    return (
+        <div>
+            <Tabs defaultActiveKey="1" items={items} />
         </div>
     );
 };
