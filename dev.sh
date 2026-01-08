@@ -51,6 +51,7 @@ echo "按 Ctrl+C 退出"
 (cd "${BACKEND_DIR}" && ./venv/bin/python -m uvicorn app.main:app --reload --port "${BACKEND_PORT}") &
 backend_pid="$!"
 
+export VITE_API_BASE_URL="http://localhost:${BACKEND_PORT}/api"
 (cd "${FRONTEND_DIR}" && npm run dev -- --port "${FRONTEND_PORT}") &
 frontend_pid="$!"
 
