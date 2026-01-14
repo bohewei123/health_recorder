@@ -1,9 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../api';
 
+const normalizeTimeOfDay = (v) => {
+  if (v === '早起时') return '起床';
+  if (v === '中午') return '下午';
+  return v;
+};
+
 export const fetchRecords = createAsyncThunk('records/fetchRecords', async () => {
   const response = await api.get('/records');
-  return response.data;
+  return response.data.map((r) => ({ ...r, time_of_day: normalizeTimeOfDay(r.time_of_day) }));
 });
 
 export const addRecord = createAsyncThunk('records/addRecord', async (record) => {
@@ -38,11 +44,13 @@ const recordsSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(addRecord.fulfilled, (state, action) => {
-        const index = state.items.findIndex(r => r.date === action.payload.date && r.time_of_day === action.payload.time_of_day);
+        const targetDate = action.payload.date;
+        const targetTime = normalizeTimeOfDay(action.payload.time_of_day);
+        const index = state.items.findIndex(r => r.date === targetDate && normalizeTimeOfDay(r.time_of_day) === targetTime);
         if (index !== -1) {
-            state.items[index] = action.payload;
+            state.items[index] = { ...action.payload, time_of_day: targetTime };
         } else {
-            state.items.push(action.payload);
+            state.items.push({ ...action.payload, time_of_day: targetTime });
         }
       })
       .addCase(deleteRecord.fulfilled, (state, action) => {

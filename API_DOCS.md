@@ -27,6 +27,10 @@ Once the backend is running (default port 8000):
 - `GET /api/exercises/logs/{date}`: Get exercise log for a specific date.
 - `POST /api/exercises/logs/{date}`: Save exercise log for a specific date.
 
+## Notes Module (Frontend Only)
+
+The Chronic Pain Course Notes module stores notes locally in the browser (localStorage) and does not introduce new backend API endpoints.
+
 ## Data Models
 
 Refer to the Swagger UI for detailed JSON schemas of Request and Response bodies.

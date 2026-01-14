@@ -17,5 +17,8 @@ class RecordService:
     def get_all_records(self):
         return self.crud.get_all_records()
 
+    def get_records_in_range(self, start_date: str, end_date: str):
+        return self.crud.get_records_in_range(start_date, end_date)
+
     def delete_record(self, record_id: int):
         self.crud.delete_record(record_id)

@@ -19,6 +19,7 @@ The application follows a **Separation of Concerns** principle with a distinct F
 - `Exercises`: Tabbed interface for tracking rehabilitation exercises and managing the exercise list.
 - `Trends`: Visual analytics using line charts to track symptom trends over time.
 - `History`: Tabular view of all records with export functionality.
+- `PainNotes`: Markdown-based course notes editor with local persistence and export.
 
 ### Backend
 
@@ -57,6 +58,24 @@ Stores daily exercise feedback.
 
 - `date`: TEXT (PK)
 - `data`: TEXT (JSON)
+
+## Local-Only Data (Frontend)
+
+### Chronic Pain Course Notes
+
+Course notes are stored locally in the browser (localStorage), not in the backend database.
+
+Each note records:
+
+- `id`
+- `content` (Markdown, max 2000 characters)
+- `createdAt`, `updatedAt` (ISO timestamps)
+
+Features:
+
+- Sorted list view and date-range filtering
+- Autosave (periodic and on focus loss)
+- Export to Markdown file from the frontend
 
 ## Version History
 

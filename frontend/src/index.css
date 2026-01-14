@@ -13,5 +13,47 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #FAFAF5; /* Match our warm theme */
+  background-color: var(--app-bg, #FAFAF5);
+}
+
+.markdown-preview h1,
+.markdown-preview h2,
+.markdown-preview h3,
+.markdown-preview h4,
+.markdown-preview h5,
+.markdown-preview h6 {
+  margin: 0.8em 0 0.4em;
+}
+
+.markdown-preview p {
+  margin: 0.6em 0;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+  padding-left: 1.2em;
+  margin: 0.6em 0;
+}
+
+.markdown-preview a {
+  color: var(--markdown-link, inherit);
+}
+
+.markdown-preview code {
+  padding: 0.1em 0.35em;
+  border-radius: 6px;
+  background: var(--markdown-inline-code-bg, rgba(0, 0, 0, 0.04));
+}
+
+.markdown-preview pre {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--markdown-border, rgba(0, 0, 0, 0.08));
+  background: var(--markdown-code-bg, rgba(0, 0, 0, 0.04));
+  overflow: auto;
+}
+
+.markdown-preview pre code {
+  padding: 0;
+  background: transparent;
 }

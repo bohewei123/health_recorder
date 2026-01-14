@@ -8,6 +8,10 @@ import { SYMPTOMS_CONFIG } from '../constants';
 const { RangePicker } = DatePicker;
 const { Title } = Typography;
 
+const EXTRA_METRICS = [
+    { key: "mood_level", label: "😊 情绪状态", color: "#2f54eb" }
+];
+
 const Trends = () => {
     const [data, setData] = useState([]);
     const [dateRange, setDateRange] = useState([dayjs().subtract(1, 'month'), dayjs()]);
@@ -25,7 +29,12 @@ const Trends = () => {
                 
                 // Sort by date and time
                 const timeMap = {
-                    "早起时": "07:00", "上午": "10:00", "中午": "12:00", "下午": "16:00", "晚上": "20:00"
+                    "起床": "07:00",
+                    "早起时": "07:00",
+                    "上午": "10:00",
+                    "中午": "12:00",
+                    "下午": "16:00",
+                    "晚上": "20:00"
                 };
                 
                 filtered = filtered.map(r => ({
@@ -54,7 +63,7 @@ const Trends = () => {
                     value={selectedSymptoms}
                     onChange={setSelectedSymptoms}
                 >
-                    {SYMPTOMS_CONFIG.map(s => (
+                    {[...SYMPTOMS_CONFIG, ...EXTRA_METRICS].map(s => (
                         <Select.Option key={s.key} value={s.key}>{s.label}</Select.Option>
                     ))}
                 </Select>
@@ -70,7 +79,7 @@ const Trends = () => {
                             <Tooltip />
                             <Legend />
                             {selectedSymptoms.map(key => {
-                                const conf = SYMPTOMS_CONFIG.find(c => c.key === key);
+                                const conf = [...SYMPTOMS_CONFIG, ...EXTRA_METRICS].find(c => c.key === key);
                                 return (
                                     <Line 
                                         key={key}

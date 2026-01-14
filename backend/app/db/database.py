@@ -1,6 +1,5 @@
 import sqlite3
 import json
-import os
 
 DB_PATH = "health_records.db"
 
@@ -26,12 +25,87 @@ class DBManager:
                 throat_level INTEGER,
                 dry_eye_level INTEGER,
                 fatigue_level INTEGER,
+                mood_level INTEGER,
+                body_feeling_note TEXT,
+                sleep_note TEXT,
+                daily_activity_note TEXT,
+                pain_increasing_activities TEXT,
+                pain_decreasing_activities TEXT,
+                dizziness_increasing_activities TEXT,
+                dizziness_decreasing_activities TEXT,
+                medication_used INTEGER,
+                medication_note TEXT,
                 notes TEXT,
                 triggers TEXT,
                 interventions TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+
+        cursor.execute("PRAGMA table_info(daily_records)")
+        existing_columns = {row[1] for row in cursor.fetchall()}
+        desired_columns = {
+            "mood_level": "INTEGER DEFAULT 0",
+            "body_feeling_note": "TEXT DEFAULT ''",
+            "sleep_note": "TEXT DEFAULT ''",
+            "daily_activity_note": "TEXT DEFAULT ''",
+            "pain_increasing_activities": "TEXT DEFAULT ''",
+            "pain_decreasing_activities": "TEXT DEFAULT ''",
+            "dizziness_increasing_activities": "TEXT DEFAULT ''",
+            "dizziness_decreasing_activities": "TEXT DEFAULT ''",
+            "medication_used": "INTEGER DEFAULT 0",
+            "medication_note": "TEXT DEFAULT ''"
+        }
+
+        for col, col_def in desired_columns.items():
+            if col not in existing_columns:
+                cursor.execute(f"ALTER TABLE daily_records ADD COLUMN {col} {col_def}")
+
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS daily_summaries (
+                date TEXT PRIMARY KEY,
+                stomach_level INTEGER,
+                throat_level INTEGER,
+                dry_eye_level INTEGER,
+                fatigue_level INTEGER,
+                sleep_note TEXT,
+                daily_activity_note TEXT,
+                pain_increasing_activities TEXT,
+                pain_decreasing_activities TEXT,
+                dizziness_increasing_activities TEXT,
+                dizziness_decreasing_activities TEXT,
+                medication_used INTEGER,
+                medication_note TEXT,
+                notes TEXT,
+                triggers TEXT,
+                interventions TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
+        cursor.execute("PRAGMA table_info(daily_summaries)")
+        existing_summary_columns = {row[1] for row in cursor.fetchall()}
+        desired_summary_columns = {
+            "stomach_level": "INTEGER DEFAULT 0",
+            "throat_level": "INTEGER DEFAULT 0",
+            "dry_eye_level": "INTEGER DEFAULT 0",
+            "fatigue_level": "INTEGER DEFAULT 0",
+            "sleep_note": "TEXT DEFAULT ''",
+            "daily_activity_note": "TEXT DEFAULT ''",
+            "pain_increasing_activities": "TEXT DEFAULT ''",
+            "pain_decreasing_activities": "TEXT DEFAULT ''",
+            "dizziness_increasing_activities": "TEXT DEFAULT ''",
+            "dizziness_decreasing_activities": "TEXT DEFAULT ''",
+            "medication_used": "INTEGER DEFAULT 0",
+            "medication_note": "TEXT DEFAULT ''",
+            "notes": "TEXT",
+            "triggers": "TEXT",
+            "interventions": "TEXT"
+        }
+
+        for col, col_def in desired_summary_columns.items():
+            if col not in existing_summary_columns:
+                cursor.execute(f"ALTER TABLE daily_summaries ADD COLUMN {col} {col_def}")
         
         # Exercise Configuration Table
         cursor.execute('''

@@ -12,6 +12,16 @@ class DailyRecordBase(BaseModel):
     throat_level: int = 0
     dry_eye_level: int = 0
     fatigue_level: int = 0
+    mood_level: int = 0
+    body_feeling_note: str = ""
+    sleep_note: str = ""
+    daily_activity_note: str = ""
+    pain_increasing_activities: str = ""
+    pain_decreasing_activities: str = ""
+    dizziness_increasing_activities: str = ""
+    dizziness_decreasing_activities: str = ""
+    medication_used: bool = False
+    medication_note: str = ""
     notes: Dict[str, str] = {}
     triggers: Dict[str, str] = {}
     interventions: Dict[str, str] = {}
@@ -25,6 +35,30 @@ class DailyRecord(DailyRecordBase):
 
     class Config:
         from_attributes = True
+
+class DailySummaryBase(BaseModel):
+    date: str
+    stomach_level: int = 0
+    throat_level: int = 0
+    dry_eye_level: int = 0
+    fatigue_level: int = 0
+    sleep_note: str = ""
+    daily_activity_note: str = ""
+    pain_increasing_activities: str = ""
+    pain_decreasing_activities: str = ""
+    dizziness_increasing_activities: str = ""
+    dizziness_decreasing_activities: str = ""
+    medication_used: bool = False
+    medication_note: str = ""
+    notes: Dict[str, str] = {}
+    triggers: Dict[str, str] = {}
+    interventions: Dict[str, str] = {}
+
+class DailySummaryCreate(DailySummaryBase):
+    pass
+
+class DailySummary(DailySummaryBase):
+    created_at: Optional[str] = None
 
 # --- Exercises ---
 

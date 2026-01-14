@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .api import records, exercises
+from .api import records, exercises, summaries
 
 app = FastAPI(
     title="Health Recorder API",
@@ -28,6 +28,7 @@ app.add_middleware(
 
 # Include Routers
 app.include_router(records.router, prefix="/api/records", tags=["Records"])
+app.include_router(summaries.router, prefix="/api/daily_summaries", tags=["Daily Summaries"])
 app.include_router(exercises.router, prefix="/api/exercises", tags=["Exercises"])
 
 @app.get("/")
