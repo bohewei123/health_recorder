@@ -20,6 +20,11 @@ const DailyRecord = () => {
     const [date, setDate] = useState(dayjs());
     const [timeOfDay, setTimeOfDay] = useState('上午');
 
+    const customSliderStyle = {
+        trackStyle: { backgroundColor: '#9C6644' },
+        handleStyle: { borderColor: '#9C6644', backgroundColor: '#9C6644' }
+    };
+
     const optionalSymptoms = useMemo(
         () => SYMPTOMS_CONFIG.filter((sym) => !['pain', 'dizziness'].includes(sym.name)),
         []
@@ -233,13 +238,13 @@ const DailyRecord = () => {
             <Form form={form} onFinish={onFinish} layout="vertical">
                 <Card title="身体感觉和活动日志" size="small">
                     <Form.Item name="pain_level" label="疼痛感觉（0～10）">
-                        <Slider min={0} max={10} marks={{0:0, 5:5, 10:10}} />
+                        <Slider min={0} max={10} marks={{0:0, 5:5, 10:10}} {...customSliderStyle} />
                     </Form.Item>
                     <Form.Item name="dizziness_level" label="头晕感觉（0～10）">
-                        <Slider min={0} max={10} marks={{0:0, 5:5, 10:10}} />
+                        <Slider min={0} max={10} marks={{0:0, 5:5, 10:10}} {...customSliderStyle} />
                     </Form.Item>
                     <Form.Item name="mood_level" label="情绪状态（0～10）">
-                        <Slider min={0} max={10} marks={{0:0, 5:5, 10:10}} />
+                        <Slider min={0} max={10} marks={{0:0, 5:5, 10:10}} {...customSliderStyle} />
                     </Form.Item>
 
                     <Form.Item name="body_feeling_note" label="描述身体感觉">
@@ -298,7 +303,7 @@ const DailyRecord = () => {
                                         <Col xs={24} md={12} key={sym.key}>
                                             <Card title={sym.label} size="small">
                                                 <Form.Item name={sym.key} label="评分 (0-10)">
-                                                    <Slider min={0} max={10} marks={{0:0, 5:5, 10:10}} />
+                                                    <Slider min={0} max={10} marks={{0:0, 5:5, 10:10}} {...customSliderStyle} />
                                                 </Form.Item>
                                                 <Form.Item name={`note_${sym.name}`} label="具体症状">
                                                     <TextArea placeholder="描述..." autoSize={{ minRows: 1, maxRows: 6 }} />
